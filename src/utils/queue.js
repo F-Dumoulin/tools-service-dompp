@@ -1,5 +1,4 @@
 const crypto = require("crypto");
-const { isValidTool } = require("./tool.js");
 const processIdentifier = crypto.randomBytes(20).toString("hex");
 const MAX_CONCURRENT_SAME_HOST_REQUESTS = parseInt(process.env.MAX_CONCURRENT_SAME_HOST_REQUESTS ?? "10");
 
@@ -13,17 +12,17 @@ class Queue {
 		this.pool = pool;
 	}
 
-	async add({ url, tool, priority }) {
+	async add({ url, xml, priority }) {
 		if (!priority) {
 			priority = 1;
 		}
 
-		// Handle requests for multiple tools by calling the add method individually for every requested tool
-		if (Array.isArray(tool)) {
-			for (const singleTool of tool) {
+		// Handle requests with multiple xml assertions by calling the add method individually for every xml
+		if (Array.isArray(xml)) {
+			for (const singleXml of xml) {
 				await this.add({
 					url: url,
-					tool: singleTool,
+					xml: singleXml,
 					priority: priority
 				});
 			}
@@ -42,19 +41,15 @@ class Queue {
 			return;
 		}
 
-		if (!url || !tool || typeof url != "string" || typeof tool != "string") {
-			throw new Error(`Invalid request: missing url and/or tool parameter: ${JSON.stringify({ url, tool, priority })}.`);
-		}
-
-		if (!isValidTool(tool)) {
-			throw new Error(`Invalid tool requested. ${tool} is either not a valid Koalati tool, or it is not installed.`);
+		if (!url || !xml || typeof url != "string" || typeof xml != "string") {
+			throw new Error(`Invalid request: missing url and/or tool parameter: ${JSON.stringify({ url, xml, priority })}.`);
 		}
 
 		/*
          * If an unprocessed request for this exact URL & tool already exists, there is no need to duplicate it.
          * Just skip this request: both requesters will be notified when the existing is processed.
          */
-		const existingRequest = await this.getUnprocessedMatchingRequest(url, tool);
+		const existingRequest = await this.getUnprocessedMatchingRequest(url, xml);
 		if (existingRequest) {
 			// If the new request has a higher priority than the existing one, update the existing request to bump its priority.
 			if (priority > existingRequest.priority) {
@@ -69,18 +64,19 @@ class Queue {
 
 		// Insert the request in the database
 		await this.pool.query(`
-            INSERT INTO requests (url, hostname, tool, priority) VALUES ($1, $2, $3, $4)
-        `, [url, hostname, tool, priority]);
+            INSERT INTO requests (url, hostname, tool, xml, priority) VALUES ($1, $2, $3, $4, $5)
+        `, [url, hostname, "dom-pp", xml, priority]);
 	}
 
-	async getUnprocessedMatchingRequest(url, tool) {
+	async getUnprocessedMatchingRequest(url, xml) {
+		return null; // /!\ temporaire pour le développement
 		const res = await this.pool.query(`
             SELECT *
             FROM requests
             WHERE completed_at IS NULL
             AND url = $1
-            AND tool = $2
-        `, [url, tool]);
+            AND xml = $2
+        `, [url, xml]);
 		return res.rowCount > 0 ? res.rows[0] : null;
 	}
 

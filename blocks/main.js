@@ -1,0 +1,9 @@
+require("./action.js");
+require("./condition.js");
+require("./operator.js");
+require("./other.js");
+require("./property.js");
+require("./quantifier.js");
+require("./selector.js");
+
+module.exports.toolbox = '<xmlxmlns="https://developers.google.com/blockly/xml"id="toolbox"style="display:none"><categoryname="Quantifier"><blocktype="q_forall"></block><blocktype="q_exists"></block><blocktype="q_forallpairs"></block></category><categoryname="Selector"><blocktype="s_findbyselector"><fieldname="fbs_selector">#main</field></block><blocktype="s_findbyclass"><fieldname="fbc_class">navlink</field></block><blocktype="s_findbyid"><fieldname="fbi_id">main</field></block></category><categoryname="Condition"><blocktype="c_comparetovalue"><fieldname="cpt_value">0</field></block><blocktype="c_comparetwoelems"></block><blocktype="c_sameoffsettop"></block></category><categoryname="Property"><blocktype="prop_width"></block><blocktype="prop_height"></block><blocktype="prop_offsettop"></block><blocktype="prop_color"></block></category><categoryname="Operator"><blocktype="op_equal"></block><blocktype="op_greatherthan"></block><blocktype="op_greatherorequal"></block><blocktype="op_lesserthan"></block><blocktype="op_lesserorequal"></block></category><categoryname="Action"><blocktype="a_delay"><fieldname="delay_duration">0</field></block><blocktype="a_scroll"><fieldname="x_scroll">0</field><fieldname="y_scroll">0</field></block><blocktype="a_click"><fieldname="click_selector">#button</field></block></category><categoryname="Other"><blocktype="testcase"><fieldname="tc_description">Testing...</field></block><blocktype="evaluation"></block></category></xml>';

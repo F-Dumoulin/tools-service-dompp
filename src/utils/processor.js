@@ -99,43 +99,18 @@ module.exports = class Processor {
 			devices: puppeteer.devices
 		};
 
-		var xml = Blockly.Xml.textToDom(request.xml);
-
-		//var workspace = Blockly.WorkspaceSvg(new Blockly.Options({ readOnly: true}));
 		var workspace = new Blockly.Workspace();
+
+		var xml = Blockly.Xml.textToDom(request.xml);
 		Blockly.Xml.domToWorkspace(xml, workspace);
+
 		var code = Blockly.JavaScript.workspaceToCode(workspace);
+		
+		console.log("Code : \n" + code);
 		eval(code);
 
 		// Run the tool
 		let jsonResults = null;
-		// try {
-		// 	const toolClass = require(request.tool);
-		// 	const toolInstance = new toolClass(availableData);
-		// 	await toolInstance.run();
-		// 	const validationErrors = validator.checkResults(toolInstance.results);
-
-		// 	if (validationErrors.length) {
-		// 		sentryTransaction.setTag("failure_reason", "result_format");
-		// 		sentryTransaction.finish();
-		// 		return await this.failRequest("The tool's results were invalid. This error will be reported to the tool's developer automatically.", validationErrors);
-		// 	}
-
-		// 	jsonResults = JSON.stringify(toolInstance.results);
-		// 	await toolInstance.cleanup();
-		// } catch (error) {
-		// 	if (!jsonResults) {
-		// 		sentryTransaction.setTag("failure_reason", "exception");
-		// 		sentryTransaction.finish();
-		// 		return await this.failRequest("An error has occured while running the tool on your page. This error will be reported to the tool's developer automatically.", error);
-		// 	} else {
-		// 		/*
-  //                * If the results are present, it means the error occured during the tool's cleanup() method.
-  //                * This isn't worth throwing an error to the end-user, but the developer should be notified.
-  //                */
-		// 		Notify.developerError(request, error.message, error);
-		// 	}
-		// }
 
 		const successResponse = await this.completeRequest(jsonResults, Date.now() - processingStartTime);
 		sentryTransaction.finish();

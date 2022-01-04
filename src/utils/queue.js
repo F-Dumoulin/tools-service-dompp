@@ -34,7 +34,7 @@ class Queue {
 			for (const singleUrl of url) {
 				await this.add({
 					url: singleUrl,
-					tool: tool,
+					xml: xml,
 					priority: priority
 				});
 			}

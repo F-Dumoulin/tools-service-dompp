@@ -1,3 +1,5 @@
+const Blockly = require ("blockly");
+
 Blockly.Blocks['op_greatherthan'] = {
   init: function() {
     this.appendDummyInput()
@@ -58,26 +60,26 @@ Blockly.Blocks['op_equal'] = {
 
 
 Blockly.JavaScript['op_greatherthan'] = function(block) {
-  let code = 'new dompp.GreaterThan()';
+  var code = 'new dompp.GreaterThan()';
   return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['op_greatherorequal'] = function(block) {
-  let code = 'new dompp.GreaterOrEqual()';
+  var code = 'new dompp.GreaterOrEqual()';
   return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['op_lesserthan'] = function(block) {
-  let code = 'new dompp.LesserThan()';
+  var code = 'new dompp.LesserThan()';
   return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['op_lesserorequal'] = function(block) {
-  let code = 'new dompp.LesserOrEqual()';
+  var code = 'new dompp.LesserOrEqual()';
   return [code, Blockly.JavaScript.ORDER_NONE];
 };
 
 Blockly.JavaScript['op_equal'] = function(block) {
-  let code = 'new dompp.IsEqualTo()';
+  var code = 'new dompp.IsEqualTo()';
   return [code, Blockly.JavaScript.ORDER_NONE];
 };

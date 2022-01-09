@@ -1,6 +1,6 @@
 # Koalati Tools API
 
-This is the web service that handles requests for all website testing on Koalati.
+This is the web service that handles requests for DOM-PP based testing on Koalati.
 
 ## Getting started
 The easiest way to get started is to use Docker Compose with the provided configurations.
@@ -34,17 +34,17 @@ This is to optimize the overall processing time of the web service, as it reduce
 
 ### The `Processor` and `ProcessorManager`
 
-The `Processor` class represents the workers who take in requests, runs the Koalati tools on the requested URL, validates the results and passes them along to be sent to Koalati's users.
+The `Processor` class represents the workers who take in requests, translates the request's XML into Javascript tests and executes them. **⚠️ Result formatting and dispatching not implemented yet.**
 
 Each `Processor` manages a Puppeteer [Page](https://pptr.dev/#?product=Puppeteer&version=v5.5.0&show=api-class-page), which is launched automatically when a processor instance is created.
 
 Its `processNextRequest()` method is where the magic happens. In it, the `Processor`:
 - fetches the next request to process from the `Queue`;
 - loads its target page using the BrowserManager's `loadUrlWithRetries()` utility method;
-- creates an instance of the desired tool;
-- runs the tool, providing it with all of the necessary data;
-- validates the tool's results;
-- runs the tool's cleanup mehod;
+- translates Blockly XML exported tests into a Blockly Workspace;
+- generates Javascript code from that Workspace;
+- runs the generated tests;
+- **:warning: cleanup and result validation not implemented yet;**
 - marks the request as completed;
 - submits the request's results (or error) to Koalati's users via the `Notify`'s `requestSuccess()` or `requestError()` & `developerError()` methods.
 
@@ -74,8 +74,8 @@ The `Notify` utility class definees three static methods, which are defined belo
 ## Available endpoints
 Below are the endpoints made available by the tools service. For more information, take a look at [the routing script](https://github.com/koalatiapp/tools-service/blob/master/src/router/index.js).
 
-### Tools endpoints
-- `/tools/request`: accepts a request object with the following properties: `url`, `tool`, and `priority`. Both `url` and `tool` can be either a string or an array of strings. `priority` is expected to be an integer, an defaults to `1` when invalid or unspecified.
+### Request endpoints
+- `/tools/request`: accepts a request object with the following properties: `url`, `xml`, and `priority`. Both `url` and `xml` can be either a string or an array of strings. `priority` is expected to be an integer, an defaults to `1` when invalid or unspecified.
 
 ### Status endpoints
 - `/status/up`: returns the uptime of the service.
@@ -136,6 +136,7 @@ You can do so by using the following queries:
 CREATE TABLE requests (
     id SERIAL PRIMARY KEY,
     url TEXT,
+	xml TEXT,
     hostname VARCHAR(255),
     priority SMALLINT DEFAULT 1,
     tool VARCHAR(255),
